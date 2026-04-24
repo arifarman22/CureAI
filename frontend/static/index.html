@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CureAI - Intelligent Medical Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <i class="fas fa-heartbeat"></i>
+            CureAI
+        </a>
+        <div class="nav-links">
+            <a href="#how-it-works" class="nav-link">How it Works</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="login.html" class="nav-link" style="margin-left: 1rem;">Login</a>
+            <a href="register.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="padding: 6rem 5% 4rem; overflow: hidden;">
+        <div class="hero-content" style="display: flex; align-items: center; justify-content: space-between; gap: 3rem; text-align: left; max-width: 1200px;">
+            <div style="flex: 1;" class="animate-fade-in-up">
+                <h1 class="text-gradient" style="font-size: 3.5rem; line-height: 1.15; margin-bottom: 1.5rem;">Your Intelligent Health Companion</h1>
+                <p style="font-size: 1.25rem; color: var(--text-light); margin-bottom: 2.5rem; line-height: 1.6;">Describe your symptoms and get instant, AI-powered medical insights. CureAI provides reliable preliminary information to help you understand your health better, faster than ever.</p>
+                <div class="hero-actions" style="justify-content: flex-start;">
+                    <a href="register.html" class="btn btn-primary animate-fade-in-up delay-100" style="padding: 0.8rem 2rem; font-size: 1.1rem; border-radius: var(--border-radius-full);">Get Started Free</a>
+                    <a href="#how-it-works" class="btn btn-outline animate-fade-in-up delay-200" style="padding: 0.8rem 2rem; font-size: 1.1rem; border-radius: var(--border-radius-full);">Learn More</a>
+                </div>
+            </div>
+            <div style="flex: 1; display: flex; justify-content: center; position: relative;" class="animate-fade-in-up delay-300">
+                <div style="position: absolute; inset: -20px; background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%); opacity: 0.15; filter: blur(40px); z-index: 0; animation: pulseGlow 4s infinite;"></div>
+                <img src="hero_medical.png" alt="Medical Technology abstract" style="max-width: 100%; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); position: relative; z-index: 1; animation: float 6s ease-in-out infinite;">
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" style="padding: 5rem 5%; background: var(--surface);">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center; margin-bottom: 3rem;" class="animate-fade-in-up delay-100">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">How CureAI Works</h2>
+            <p style="color: var(--text-light); font-size: 1.1rem;">Get answers to your medical concerns in three simple steps.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card animate-fade-in-up delay-200" style="text-align: center;">
+                <div class="feature-icon" style="background: var(--secondary); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem; color: var(--primary);">
+                    1
+                </div>
+                <h3>Create an Account</h3>
+                <p>Sign up securely in seconds. Your privacy and data protection are our highest priorities.</p>
+            </div>
+            
+            <div class="feature-card animate-fade-in-up delay-300" style="text-align: center;">
+                <div class="feature-icon" style="background: var(--secondary); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem; color: var(--primary);">
+                    2
+                </div>
+                <h3>Describe Symptoms</h3>
+                <p>Chat naturally with our AI. Describe what you're feeling, how long it's lasted, and any other details.</p>
+            </div>
+            
+            <div class="feature-card animate-fade-in-up delay-400" style="text-align: center;">
+                <div class="feature-icon" style="background: var(--secondary); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem; color: var(--primary);">
+                    3
+                </div>
+                <h3>Get Instant Insights</h3>
+                <p>Receive preliminary analysis, potential causes, and recommendations on whether you should see a doctor.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center; margin-bottom: 3rem;" class="animate-fade-in-up delay-100">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Why Choose CureAI</h2>
+            <p style="color: var(--text-light); font-size: 1.1rem;">Built with cutting edge technology to provide peace of mind.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card animate-fade-in-up delay-200">
+                <div class="feature-icon" style="color: var(--primary); background: transparent; font-size: 2.5rem;">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Advanced AI Analysis</h3>
+                <p>Powered by cutting-edge medical language models trained on vast amounts of clinical data to understand your symptoms accurately.</p>
+            </div>
+            
+            <div class="feature-card animate-fade-in-up delay-300">
+                <div class="feature-icon" style="color: var(--primary); background: transparent; font-size: 2.5rem;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Private & Secure</h3>
+                <p>Your health data is encrypted at rest and in transit. We strictly adhere to modern data protection standards to keep your medical queries confidential.</p>
+            </div>
+            
+            <div class="feature-card animate-fade-in-up delay-400">
+                <div class="feature-icon" style="color: var(--primary); background: transparent; font-size: 2.5rem;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>24/7 Availability</h3>
+                <p>Medical concerns don't wait for business hours. Get immediate insights anytime, anywhere, without booking an appointment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 5rem 5%; background: var(--primary); color: white; text-align: center;">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: white;">Ready to take control of your health?</h2>
+            <p style="margin-bottom: 2.5rem; font-size: 1.1rem; color: #cbd5e1;">Join thousands of users who trust CureAI for preliminary medical insights and peace of mind.</p>
+            <a href="register.html" class="btn" style="background: white; color: var(--primary); padding: 0.8rem 2.5rem; font-size: 1.1rem;">Create Your Free Account</a>
+        </div>
+    </section>
+
+    <!-- Comprehensive Footer -->
+    <footer style="background: var(--surface); border-top: 1px solid var(--border); padding: 4rem 5% 2rem;">
+        <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+            
+            <div>
+                <a href="index.html" class="nav-brand" style="margin-bottom: 1.5rem; display: inline-flex;">
+                    <i class="fas fa-heartbeat"></i>
+                    CureAI
+                </a>
+                <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6;">
+                    Empowering individuals with instant, AI-driven medical insights. Your preliminary step towards better health understanding.
+                </p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-muted); font-size: 1.25rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-muted); font-size: 1.25rem;"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="color: var(--text-muted); font-size: 1.25rem;"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark);">Product</h4>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="#features" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Features</a></li>
+                    <li><a href="#how-it-works" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">How it Works</a></li>
+                    <li><a href="login.html" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Sign In</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark);">Legal</h4>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="privacy.html" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Privacy Policy</a></li>
+                    <li><a href="terms.html" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Terms of Service</a></li>
+                    <li><a href="disclaimer.html" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Medical Disclaimer</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark);">Contact</h4>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="mailto:support@cureai.example" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;"><i class="fas fa-envelope" style="margin-right: 0.5rem; color: var(--text-muted);"></i> support@cureai.com</a></li>
+                    <li><a href="#" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;"><i class="fas fa-headset" style="margin-right: 0.5rem; color: var(--text-muted);"></i> Help Center</a></li>
+                </ul>
+            </div>
+
+        </div>
+        
+        <div style="max-width: 1200px; margin: 0 auto; text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem;">
+            <p style="margin-bottom: 0.5rem;"><strong>MEDICAL DISCLAIMER:</strong> CureAI provides preliminary informational insights and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+            <p>&copy; 2026 CureAI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check to redirect logged-in users to the app
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('authToken')) {
+                const navLinks = document.querySelector('.nav-links');
+                navLinks.innerHTML = `
+                    <a href="#how-it-works" class="nav-link">How it Works</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="chat.html" class="btn btn-primary" style="margin-left: 1rem;">Go to App</a>
+                `;
+                
+                const heroActions = document.querySelector('.hero-actions');
+                heroActions.innerHTML = '<a href="chat.html" class="btn btn-primary" style="padding: 0.8rem 2rem; font-size: 1.1rem;">Open Chat</a>';
+            }
+        });
+    </script>
+</body>
+</html>

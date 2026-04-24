@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CureAI - Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="nav-brand" style="text-decoration:none">
+                    <i class="fas fa-heartbeat"></i>
+                    <h2>CureAI</h2>
+                </a>
+            </div>
+            <div class="sidebar-content">
+                <button class="btn btn-new-chat" id="newChatBtn">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+                <div class="chat-history" id="chatHistory">
+                    <h3>Recent Chats</h3>
+                    <div class="chat-list" id="chatList"></div>
+                </div>
+                <div class="user-profile" id="userProfileSection">
+                    <div class="profile-avatar" id="profileAvatarBtn" style="cursor:pointer" title="Edit Profile">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="userName">User</h3>
+                        <p id="userEmail">user@email.com</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline w-full" id="logoutBtn" style="margin-top:.75rem">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-container">
+            <div class="mobile-header">
+                <a href="index.html" class="nav-brand" style="text-decoration:none">
+                    <i class="fas fa-heartbeat"></i> CureAI
+                </a>
+                <button id="mobileSidebarToggle" class="btn btn-ghost"><i class="fas fa-bars"></i></button>
+            </div>
+
+            <div class="chat-section">
+                <div class="messages-container" id="messagesContainer"></div>
+
+                <!-- Image Preview Bar -->
+                <div class="image-preview-bar hidden" id="imagePreviewBar">
+                    <img id="imagePreviewThumb" alt="preview">
+                    <span id="imagePreviewName">image.png</span>
+                    <button type="button" id="removeImageBtn" class="btn btn-ghost" title="Remove image">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="chatForm" class="input-form">
+                    <div class="input-container">
+                        <label for="imageInput" class="btn-attach" title="Upload image for analysis">
+                            <i class="fas fa-image"></i>
+                            <input type="file" id="imageInput" accept="image/*" hidden>
+                        </label>
+                        <input type="text" id="messageInput" placeholder="Describe your symptoms or upload an image..." autocomplete="off">
+                        <button type="submit" id="sendBtn" class="btn-send" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                            <i class="fas fa-spinner fa-spin" style="display:none"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay hidden" id="profileModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="btn btn-ghost close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" id="profileName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="profileCurrentPw" class="form-control" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="profileNewPw" class="form-control" placeholder="Leave blank to keep current">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay hidden" id="deleteModal">
+        <div class="modal-card" style="max-width:360px">
+            <h3 style="margin-bottom:1rem">Delete Chat?</h3>
+            <p style="color:var(--text-light);margin-bottom:1.5rem">This action cannot be undone.</p>
+            <div style="display:flex;gap:.75rem;justify-content:flex-end">
+                <button class="btn btn-outline close-modal">Cancel</button>
+                <button class="btn" id="confirmDeleteBtn" style="background:var(--error);color:white">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="chat_app.js"></script>
+</body>
+</html>
