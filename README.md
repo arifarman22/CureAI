@@ -250,6 +250,4 @@ CureAI provides preliminary health information only. It is **NOT** a substitute 
 ## License
 
 MIT
-#   C u r e A I 
- 
- 
+#
