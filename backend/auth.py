@@ -1,4 +1,5 @@
 import re
+import html
 import logging
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
@@ -40,8 +41,13 @@ def validate_password(password):
 
 
 def sanitize_string(value, max_len):
-    """Strip and truncate to prevent oversized input."""
-    return value.strip()[:max_len] if value else ""
+    """Strip, truncate, and escape HTML entities to prevent stored XSS."""
+    if not value:
+        return ""
+    cleaned = value.strip()[:max_len]
+    # Remove null bytes and control characters
+    cleaned = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', cleaned)
+    return html.escape(cleaned, quote=True)
 
 
 def make_tokens(user_id):

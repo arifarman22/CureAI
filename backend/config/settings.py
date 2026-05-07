@@ -31,7 +31,7 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
 INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "test")
 
 # --- CORS ---
-ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000").split(",")]
+ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5000,http://localhost:8000,http://127.0.0.1:8000").split(",")]
 
 # --- Rate Limiting ---
 RATE_LIMIT_DEFAULT = "60/minute"

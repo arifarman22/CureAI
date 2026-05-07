@@ -1,5 +1,6 @@
 import os
 import re
+import html
 import uuid
 import logging
 from datetime import datetime
@@ -18,7 +19,6 @@ chat_bp = Blueprint("chat", __name__)
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Max chats per user to prevent abuse
 MAX_CHATS_PER_USER = 100
 
 
@@ -27,12 +27,20 @@ def allowed_file(filename):
 
 
 def validate_uuid(value):
-    """Reject non-UUID chat IDs to prevent injection."""
     try:
         uuid.UUID(value)
         return True
     except (ValueError, AttributeError):
         return False
+
+
+def sanitize_content(text, max_len):
+    """Sanitize user-provided content: strip, truncate, remove control chars."""
+    if not text:
+        return ""
+    cleaned = text.strip()[:max_len]
+    cleaned = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', cleaned)
+    return cleaned
 
 
 # --- Chat CRUD ---
@@ -61,7 +69,7 @@ def create_chat():
             return jsonify({"error": f"Maximum {MAX_CHATS_PER_USER} chats reached. Delete old chats to continue."}), 400
 
         data = request.get_json(silent=True) or {}
-        title = data.get("title", "").strip()[:MAX_CHAT_TITLE_LENGTH]
+        title = sanitize_content(data.get("title", ""), MAX_CHAT_TITLE_LENGTH)
         if not title:
             title = f"Chat {datetime.now().strftime('%b %d, %H:%M')}"
 
@@ -109,7 +117,7 @@ def add_message(chat_id):
             return jsonify({"error": "Chat not found"}), 404
 
         data = request.get_json(silent=True) or {}
-        content = data.get("content", "").strip()
+        content = sanitize_content(data.get("content", ""), MAX_MESSAGE_LENGTH)
         sender = data.get("sender", "user")
 
         if not content:
@@ -173,7 +181,7 @@ def update_chat_title(chat_id):
             return jsonify({"error": "Chat not found"}), 404
 
         data = request.get_json(silent=True) or {}
-        title = data.get("title", "").strip()[:MAX_CHAT_TITLE_LENGTH]
+        title = sanitize_content(data.get("title", ""), MAX_CHAT_TITLE_LENGTH)
         if not title:
             return jsonify({"error": "Title is required"}), 400
 

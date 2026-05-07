@@ -25,8 +25,14 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+# --- Request ID for tracing ---
+import uuid as _uuid
+
 # --- App ---
-app = Flask(__name__, static_folder="../frontend/static", static_url_path="")
+STATIC_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "static")
+if not os.path.exists(STATIC_PATH):
+    STATIC_PATH = os.path.join(os.path.dirname(__file__), "..", "frontend", "static")
+app = Flask(__name__, static_folder=STATIC_PATH, static_url_path="")
 
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
@@ -66,6 +72,26 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     return TokenBlocklist.query.filter_by(jti=jwt_payload["jti"]).first() is not None
 
 
+# --- Request Validation Middleware ---
+@app.before_request
+def validate_request():
+    """Validate all incoming requests before they reach route handlers."""
+    # Add unique request ID for log tracing
+    request.request_id = str(_uuid.uuid4())[:8]
+
+    # Block non-JSON content-type on API POST/PUT routes
+    if request.path.startswith("/api/") and request.method in ("POST", "PUT"):
+        # Skip file upload endpoints
+        if "/upload" not in request.path and "/predict-image" not in request.path:
+            content_type = request.content_type or ""
+            if "application/json" not in content_type:
+                return jsonify({"error": "Content-Type must be application/json"}), 415
+
+    # Block oversized request bodies (beyond MAX_CONTENT_LENGTH which handles files)
+    if request.content_length and request.content_length > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+        return jsonify({"error": "Request body too large"}), 413
+
+
 # --- Security Headers ---
 @app.after_request
 def set_security_headers(response):
@@ -86,6 +112,9 @@ def set_security_headers(response):
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
     response.headers["Pragma"] = "no-cache"
+    # Add request ID to response for debugging
+    if hasattr(request, "request_id"):
+        response.headers["X-Request-ID"] = request.request_id
     return response
 
 
@@ -123,6 +152,14 @@ def payload_too_large(e):
 @app.errorhandler(429)
 def rate_limit_exceeded(e):
     return jsonify({"error": "Too many requests. Please slow down."}), 429
+
+@app.errorhandler(400)
+def bad_request(e):
+    return jsonify({"error": "Bad request"}), 400
+
+@app.errorhandler(415)
+def unsupported_media(e):
+    return jsonify({"error": "Unsupported content type"}), 415
 
 @app.errorhandler(500)
 def internal_error(e):

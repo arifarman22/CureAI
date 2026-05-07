@@ -2,6 +2,16 @@ const API = (window.location.hostname === "localhost" || window.location.hostnam
     ? "http://localhost:5000/api"
     : window.API_BASE_URL || (window.location.origin + "/api");
 
+function sanitizeInput(str) {
+    if (!str) return "";
+    return str
+        .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
+        .replace(/<script[^>]*>.*?<\/script>/gi, "")
+        .replace(/javascript:/gi, "")
+        .replace(/on\w+\s*=/gi, "")
+        .trim();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("authToken")) {
         window.location.href = "chat.html";
@@ -15,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("email").value.trim().toLowerCase().substring(0, 255);
+            const email = sanitizeInput(document.getElementById("email").value).toLowerCase().substring(0, 255);
             const password = document.getElementById("password").value;
             const btn = loginForm.querySelector("button[type=submit]");
 
@@ -82,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         signupForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const name = document.getElementById("name").value.trim().substring(0, 100);
-            const email = document.getElementById("email").value.trim().toLowerCase().substring(0, 255);
+            const name = sanitizeInput(document.getElementById("name").value).substring(0, 100);
+            const email = sanitizeInput(document.getElementById("email").value).toLowerCase().substring(0, 255);
             const password = document.getElementById("password").value;
             const confirm = document.getElementById("confirmPassword").value;
             const btn = signupForm.querySelector("button[type=submit]");

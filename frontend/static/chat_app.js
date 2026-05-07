@@ -3,6 +3,26 @@ const API = (window.location.hostname === "localhost" || window.location.hostnam
     : window.API_BASE_URL || (window.location.origin + "/api");
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 min inactivity logout
 
+// Global error boundary
+window.addEventListener("unhandledrejection", (e) => {
+    console.error("Unhandled promise rejection:", e.reason);
+    e.preventDefault();
+});
+window.addEventListener("error", (e) => {
+    console.error("Global error:", e.message);
+});
+
+// Input sanitizer - strip dangerous patterns
+function sanitizeInput(str) {
+    if (!str) return "";
+    return str
+        .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "") // control chars
+        .replace(/<script[^>]*>.*?<\/script>/gi, "") // script tags
+        .replace(/javascript:/gi, "") // javascript: protocol
+        .replace(/on\w+\s*=/gi, "") // event handlers
+        .trim();
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     // --- Auth Guard ---
     let authToken = localStorage.getItem("authToken");
@@ -315,7 +335,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- Send Message ---
     chatForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const text = messageInput.value.trim().substring(0, 3000);
+        const rawText = messageInput.value.trim().substring(0, 3000);
+        const text = sanitizeInput(rawText);
         if (!text && !pendingImage) return;
 
         if (!currentChatId) await createNewChat();
