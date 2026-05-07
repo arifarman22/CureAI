@@ -159,41 +159,38 @@ AI_MODE = "fallback"  # "openai", "pinecone_only", or "fallback"
 
 
 def initialize_ai():
-    """Initialize AI: Pinecone for retrieval, OpenAI for generation."""
+    """Initialize AI: Pinecone connection + lazy model loading to save memory."""
     global vector_store, openai_client, AI_MODE
 
-    # --- Step 1: Pinecone Vector Store ---
+    # --- Step 1: Pinecone (connect index only, model loads lazily) ---
     if PINECONE_API_KEY:
         try:
-            from sentence_transformers import SentenceTransformer
             from pinecone import Pinecone
-
             pc = Pinecone(api_key=PINECONE_API_KEY)
-            index_name = "test"  # Your existing index with Medical PDF data
+            index_name = "test"
 
             if index_name in [idx.name for idx in pc.list_indexes()]:
                 vector_store = {
                     "index": pc.Index(index_name),
-                    "model": SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2"),
+                    "model": None,  # Lazy load on first query
                 }
                 AI_MODE = "pinecone_only"
-                log.info(f"Pinecone connected to index '{index_name}'")
+                log.info(f"Pinecone connected to index '{index_name}' (model loads on first query)")
             else:
                 log.warning(f"Pinecone index '{index_name}' not found")
         except ImportError:
-            log.warning("sentence-transformers or pinecone not installed")
+            log.warning("pinecone not installed")
         except Exception as e:
             log.exception("Pinecone init error")
 
-    # --- Step 2: OpenAI (optional, for better generation) ---
+    # --- Step 2: OpenAI (optional) ---
     openai_key = os.getenv("OPENAI_API_KEY", "")
     if openai_key:
         try:
             from openai import OpenAI
             openai_client = OpenAI(api_key=openai_key)
-            # Quick validation
             openai_client.models.list()
-            AI_MODE = "openai" if vector_store else "openai"
+            AI_MODE = "openai"
             log.info("OpenAI connected")
         except Exception as e:
             log.warning(f"OpenAI not available: {e}")
@@ -202,12 +199,29 @@ def initialize_ai():
     log.info(f"AI Mode: {AI_MODE}")
 
 
+def _get_embedding_model():
+    """Lazy-load the embedding model on first use to save startup memory."""
+    global vector_store
+    if vector_store and vector_store["model"] is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+            vector_store["model"] = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+            log.info("Embedding model loaded.")
+        except Exception as e:
+            log.exception("Failed to load embedding model")
+            return None
+    return vector_store["model"] if vector_store else None
+
+
 def _pinecone_query(query, top_k=3, filter_dict=None):
     """Low-level Pinecone query helper."""
     if not vector_store:
         return []
+    model = _get_embedding_model()
+    if not model:
+        return []
     try:
-        embedding = vector_store["model"].encode(query).tolist()
+        embedding = model.encode(query).tolist()
         kwargs = {"vector": embedding, "top_k": top_k, "include_metadata": True}
         if filter_dict:
             kwargs["filter"] = filter_dict

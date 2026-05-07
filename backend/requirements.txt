@@ -9,9 +9,11 @@ psycopg2-binary==2.9.9
 requests==2.31.0
 gunicorn==21.2.0
 
-# AI - Pinecone vector search + embeddings
+# AI - CPU-only PyTorch (much smaller than full PyTorch)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.0+cpu
+sentence-transformers==2.2.2
 pinecone-client>=3.0.0
-sentence-transformers>=2.2.2
 
-# Optional - for better AI responses
+# Optional
 openai>=1.14.0
