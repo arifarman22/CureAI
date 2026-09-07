@@ -121,12 +121,26 @@ h1,h2,h3,h4,h5,h6{font-weight:600;color:var(--dark);letter-spacing:-.025em}
 .image-preview-bar img{width:40px;height:40px;object-fit:cover;border-radius:4px}
 .image-preview-bar span{flex:1;font-size:.85rem;color:var(--text-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* Image Type Selector */
+.image-type-bar{display:flex;align-items:center;gap:.5rem;padding:.4rem 2rem;background:var(--secondary);border-top:1px solid var(--border);flex-wrap:wrap}
+.img-type-option{display:flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:500;color:var(--text-light);cursor:pointer;padding:.25rem .6rem;border-radius:var(--border-radius-full);border:1px solid var(--border);transition:all .2s}
+.img-type-option:has(input:checked){background:var(--primary);color:#fff;border-color:var(--primary)}
+.img-type-option input{display:none}
+
 /* Input */
 .input-form{padding:1rem 2rem 1.5rem;background:var(--surface)}
+.input-actions{display:flex;justify-content:center;margin-bottom:.5rem;min-height:1.5rem}
+.btn-cancel{display:flex;align-items:center;gap:.4rem;padding:.35rem .9rem;border-radius:var(--border-radius-full);border:1px solid var(--error);background:transparent;color:var(--error);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-cancel:hover{background:var(--error);color:#fff}
 .input-container{display:flex;align-items:center;background:var(--gray-light);border:1px solid var(--border);border-radius:var(--border-radius-lg);padding:.4rem .5rem .4rem .5rem;transition:border-color .2s}
 .input-container:focus-within{border-color:var(--primary);background:var(--surface);box-shadow:var(--shadow-sm)}
 .input-container input{flex:1;border:none;background:transparent;padding:.5rem .5rem;font-size:1rem;outline:none;color:var(--dark)}
 .input-container input::placeholder{color:var(--text-muted)}
+
+/* Edit button on user messages */
+.msg-edit-btn{display:none;background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:var(--border-radius);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;margin-top:.4rem;transition:all .2s}
+.user-message:hover .msg-edit-btn{display:inline-flex;align-items:center;gap:.3rem}
+.msg-edit-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 
 .btn-attach{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--border-radius);color:var(--text-muted);cursor:pointer;transition:color .2s,background .2s;flex-shrink:0}
 .btn-attach:hover{color:var(--primary);background:rgba(14,165,233,.08)}

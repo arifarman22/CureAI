@@ -433,41 +433,7 @@ def get_smart_fallback(symptoms):
 
 
 # --- Image Analysis ---
-
-# Common medical image conditions for rule-based analysis
-SKIN_CONDITIONS = {
-    "redness": "Possible dermatitis, sunburn, or allergic reaction",
-    "rash": "Could indicate eczema, psoriasis, or contact dermatitis",
-    "swelling": "May suggest inflammation, infection, or allergic reaction",
-    "wound": "Assess for infection signs: redness, warmth, pus, or spreading",
-    "bruise": "Usually heals on its own; see a doctor if unexplained or frequent",
-}
-
-
-def analyze_image_with_hf(image_bytes):
-    """Try HuggingFace image classification."""
-    if not HUGGINGFACE_API_KEY:
-        return None
-
-    models_to_try = [
-        "google/vit-base-patch16-224",
-        "microsoft/resnet-50",
-    ]
-
-    for model in models_to_try:
-        try:
-            resp = http_requests.post(
-                f"https://api-inference.huggingface.co/models/{model}",
-                headers={"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"},
-                data=image_bytes,
-                timeout=30,
-            )
-            if resp.status_code == 200:
-                return resp.json(), model
-        except Exception:
-            continue
-
-    return None, None
+from image_analyzer import analyze_image
 
 
 # --- Routes ---
@@ -553,83 +519,16 @@ def predict_image():
         if not image_bytes:
             return jsonify({"error": "Empty file"}), 400
 
-        # Try HuggingFace image classification
-        predictions, model_used = analyze_image_with_hf(image_bytes)
+        image_type = request.form.get("image_type", "general").lower().strip()
+        if image_type not in ("skin", "xray", "eye", "general"):
+            image_type = "general"
 
-        if predictions and isinstance(predictions, list):
-            # If we have OpenAI, get a medical interpretation
-            if openai_client:
-                pred_text = ", ".join([f"{p.get('label', '?')} ({p.get('score', 0):.1%})" for p in predictions[:5]])
-                try:
-                    resp = openai_client.chat.completions.create(
-                        model="gpt-3.5-turbo",
-                        messages=[
-                            {"role": "system", "content": "You are a medical image analysis assistant. Interpret image classification results in a medical context. Be helpful but always recommend professional consultation."},
-                            {"role": "user", "content": f"Image classification results: {pred_text}\nProvide a medical interpretation of what this image might show."},
-                        ],
-                        temperature=0.7,
-                        max_tokens=500,
-                    )
-                    analysis = resp.choices[0].message.content.strip()
-                except Exception:
-                    analysis = format_image_predictions(predictions)
-            else:
-                analysis = format_image_predictions(predictions)
+        result = analyze_image(image_bytes, image_type, HUGGINGFACE_API_KEY)
+        return jsonify(result), 200
 
-            return jsonify({
-                "analysis": analysis,
-                "predictions": predictions[:5],
-                "confidence": "medium",
-                "model": model_used,
-            })
-
-        # Fallback
-        return jsonify({
-            "analysis": get_image_fallback_response(),
-            "confidence": "low",
-            "model": "fallback",
-        })
-
-    except http_requests.Timeout:
-        return jsonify({"error": "Image analysis timed out. Please try again."}), 504
     except Exception as e:
         log.exception("Image analysis error")
-        return jsonify({
-            "analysis": get_image_fallback_response(),
-            "confidence": "low",
-            "model": "fallback",
-        })
-
-
-def format_image_predictions(predictions):
-    if not isinstance(predictions, list) or not predictions:
-        return get_image_fallback_response()
-    lines = ["**Image Analysis Results:**\n"]
-    for i, pred in enumerate(predictions[:5], 1):
-        label = pred.get("label", "Unknown")
-        score = pred.get("score", 0)
-        lines.append(f"{i}. **{label}** - {score:.1%} confidence")
-    lines.append("\n**Medical Note:** General image classification was used. "
-                 "For accurate medical image analysis, please consult a dermatologist or relevant specialist.")
-    lines.append("\n**Important:** This is an AI-based preliminary analysis. "
-                 "It should NOT be used as a medical diagnosis.")
-    return "\n".join(lines)
-
-
-def get_image_fallback_response():
-    return ("I've received your image. Here's what I recommend:\n\n"
-            "**For skin conditions:**\n"
-            "1. Note the size, color, shape, and any changes over time\n"
-            "2. Check if it's itchy, painful, or spreading\n"
-            "3. Take photos over several days to track changes\n\n"
-            "**For injuries:**\n"
-            "1. Clean the area gently with mild soap and water\n"
-            "2. Apply appropriate first aid\n"
-            "3. Watch for signs of infection (redness, warmth, swelling, pus)\n\n"
-            "**Next steps:**\n"
-            "- Describe what you see in the chat for text-based analysis\n"
-            "- Consult a healthcare provider for professional evaluation\n\n"
-            "**Disclaimer:** AI image analysis is not a substitute for professional medical diagnosis.")
+        return jsonify({"error": "Failed to analyze image. Please try again."}), 500
 
 
 # --- Cleanup ---

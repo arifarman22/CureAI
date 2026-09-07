@@ -1,6 +1,6 @@
 const API = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:5000/api"
-    : window.API_BASE_URL || (window.location.origin + "/api");
+    : window.location.origin + "/api";
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 min inactivity logout
 
 // Global error boundary
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const imagePreviewBar = $("#imagePreviewBar");
     const imagePreviewThumb = $("#imagePreviewThumb");
     const imagePreviewName = $("#imagePreviewName");
+    const imageTypeBar = $("#imageTypeBar");
     const profileModal = $("#profileModal");
     const deleteModal = $("#deleteModal");
 
@@ -79,19 +80,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.addEventListener(evt, resetInactivityTimer, { passive: true })
     );
 
-    // --- API Fetch with Auth + Retry ---
+    // --- API Fetch with Auth + Retry + Abort ---
     async function apiFetch(url, opts = {}) {
         if (!opts.headers) opts.headers = {};
-        // Don't set Content-Type for FormData (browser sets it with boundary)
         if (!(opts.body instanceof FormData)) {
             opts.headers["Content-Type"] = opts.headers["Content-Type"] || "application/json";
         }
         opts.headers["Authorization"] = `Bearer ${authToken}`;
+        if (abortController) opts.signal = abortController.signal;
 
         let resp;
         try {
             resp = await fetch(url, opts);
         } catch (e) {
+            if (e.name === "AbortError") return null;
             showToast("Network error. Check your connection.", "error");
             return null;
         }
@@ -198,12 +200,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         p.innerHTML = renderMarkdown(text);
         content.appendChild(p);
 
+        // Edit button for user messages
+        if (sender === "user" && !opts.loading && !opts.imageUrl) {
+            const editBtn = document.createElement("button");
+            editBtn.className = "msg-edit-btn";
+            editBtn.title = "Edit & resend";
+            editBtn.innerHTML = `<i class="fas fa-pen"></i>`;
+            editBtn.addEventListener("click", () => {
+                messageInput.value = text;
+                messageInput.focus();
+                updateSendState();
+            });
+            content.appendChild(editBtn);
+        }
+
         div.appendChild(avatar);
         div.appendChild(content);
         messagesContainer.appendChild(div);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         return div;
     }
+
+    // --- Cancel support ---
+    let abortController = null;
+    const cancelBtn = $("#cancelBtn");
 
     function setLoading(on) {
         const plane = sendBtn.querySelector(".fa-paper-plane");
@@ -212,7 +232,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         spin.style.display = on ? "inline-block" : "none";
         sendBtn.disabled = on;
         messageInput.disabled = on;
+        cancelBtn.classList.toggle("hidden", !on);
     }
+
+    cancelBtn.addEventListener("click", () => {
+        if (abortController) {
+            abortController.abort();
+            abortController = null;
+        }
+    });
 
     function openModal(modal) { modal.classList.remove("hidden"); }
     function closeModal(modal) { modal.classList.add("hidden"); }
@@ -317,6 +345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         imagePreviewThumb.src = URL.createObjectURL(file);
         imagePreviewName.textContent = file.name;
         imagePreviewBar.classList.remove("hidden");
+        imageTypeBar.classList.remove("hidden");
         updateSendState();
     });
 
@@ -324,6 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         pendingImage = null;
         imageInput.value = "";
         imagePreviewBar.classList.add("hidden");
+        imageTypeBar.classList.add("hidden");
         updateSendState();
     });
 
@@ -352,6 +382,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateSendState();
         setLoading(true);
 
+        abortController = new AbortController();
         const loadingMsg = addMessage("Analyzing...", "ai", { loading: true });
 
         try {
@@ -363,8 +394,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const imgForm = new FormData();
                 imgForm.append("image", pendingImage);
+                const imageType = document.querySelector('input[name="imageType"]:checked')?.value || "general";
+                imgForm.append("image_type", imageType);
                 pendingImage = null;
                 imageInput.value = "";
+                imageTypeBar.classList.add("hidden");
 
                 const resp = await apiFetch(`${API}/predict-image`, { method: "POST", body: imgForm });
                 safeRemove(loadingMsg);
@@ -395,10 +429,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
         } catch (error) {
-            console.error("Send error:", error);
             safeRemove(loadingMsg);
-            addMessage("Network error. Please check your connection and try again.", "ai");
+            if (error.name !== "AbortError") {
+                console.error("Send error:", error);
+                addMessage("Network error. Please check your connection and try again.", "ai");
+            }
         } finally {
+            abortController = null;
             setLoading(false);
         }
     });

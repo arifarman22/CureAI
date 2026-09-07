@@ -61,7 +61,29 @@
                     </button>
                 </div>
 
+                <!-- Image Type Selector (shown when image is selected) -->
+                <div class="image-type-bar hidden" id="imageTypeBar">
+                    <span style="font-size:.8rem;color:var(--text-light);margin-right:.5rem">Image type:</span>
+                    <label class="img-type-option">
+                        <input type="radio" name="imageType" value="skin" checked> Skin
+                    </label>
+                    <label class="img-type-option">
+                        <input type="radio" name="imageType" value="xray"> X-Ray
+                    </label>
+                    <label class="img-type-option">
+                        <input type="radio" name="imageType" value="eye"> Eye
+                    </label>
+                    <label class="img-type-option">
+                        <input type="radio" name="imageType" value="general"> General
+                    </label>
+                </div>
+
                 <form id="chatForm" class="input-form">
+                    <div class="input-actions">
+                        <button type="button" id="cancelBtn" class="btn-cancel hidden">
+                            <i class="fas fa-stop-circle"></i> Stop analyzing
+                        </button>
+                    </div>
                     <div class="input-container">
                         <label for="imageInput" class="btn-attach" title="Upload image for analysis">
                             <i class="fas fa-image"></i>
